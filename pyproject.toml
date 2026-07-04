@@ -1,12 +1,12 @@
 [project]
 name = "spiceybun"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
     { name="Filip Hormot", email="f.hormot@gmail.com" },
 ]
 description = "A python verification wrapper for SPICE."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.4.5",
     "pandas>=3.0.3",

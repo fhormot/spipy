@@ -5,16 +5,17 @@ An NGSPICE wrapper for simplified verification.
 # Usage
 
 ```Python
-from spiceybun import ngspice
+from spiceybun.ngspice import Ngspice
 
-simulator = ngspice('./netlist.spice')
+# Simulator setup
+simulator = Ngspice(path_netlist)
+simulator.set_output_path(path_output)
 
-simulator.add_transient(1e-6)
+simulator.add_transient(500e-9, t_step=10e-12)
 
 simulator.save_signal('V(v_out)')
-simulator.save_signal('V(v_in)')
 
-simulator.run()
+output = simulator.run()
 
 ```
 
