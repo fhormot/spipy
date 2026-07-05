@@ -136,9 +136,45 @@ def ngspice_no_variables_lib(set_env_var):
 
     return ngspice
 
+@pytest.fixture
+def ngspice_variables_lib(set_env_var):
+    test_dir = Path(__file__).parent
+
+    path_netlist = test_dir / "netlists" / "input_subckt_lib_variables.spice"
+
+    path = Path(__file__).parent
+    path_output = path / "outputs" / "output_subckt_lib_variables"
+
+    ngspice = Ngspice(path_netlist)
+    ngspice.set_output_path(path_output)
+
+    ngspice.add_spiceinit(os.environ.get("SPICEINIT"))
+    path_library = "cornerMOSlv.lib" 
+    ngspice.add_library(path_library, section='mos_tt_stat')
+
+    ngspice.add_transient(2e-3, t_step=1e-9, t_max=1e-6)
+
+    ngspice.save_signal('V(v_out)')
+    ngspice.save_signal('V(v_in)')
+
+    ngspice.measure.explicit('meas tran v_th_l2h FIND V(v_in) WHEN V(v_out)=0.75 RISE=1')
+    ngspice.measure.explicit('meas tran v_th_h2l FIND V(v_in) WHEN V(v_out)=0.75 FALL=1')
+
+    ngspice.save_signal_all(False)
+
+    return ngspice
+
+@pytest.mark.skip
 def test_environment(set_env_var):
     print(f'$PDK: {os.environ.get("PDK")}')
     print(f'$PDK_ROOT: {os.environ.get("PDK_ROOT")}')
+
+def test_netlist_doesnt_exist():
+    with pytest.raises(ValueError):
+        Ngspice("")
+
+    with pytest.raises(FileNotFoundError):
+        Ngspice("nonexistent.spice")
 
 def test_include(ngspice_basic):
     path = 'foo.sp'
@@ -146,6 +182,50 @@ def test_include(ngspice_basic):
 
     assert ngspice_basic._include(path) == expected_include
     assert ngspice_basic._netlist[-1] == expected_include
+
+def test_variable_change(ngspice_basic):
+    set_variables_1 = ['', '1e-15', '1.5']
+    set_variables_2 = ['', '1e-15', ['1.35', '1.65']]
+
+    # Check 1: Variables are empty by default
+    variables = ngspice_basic.get_variables()
+
+    for idx, variable in enumerate(variables):
+        key, value = variable['name'], variable['value']
+
+        assert value == ''
+        ngspice_basic.set_variable(key, set_variables_1[idx])
+
+    # Check 2: Variables are set to the first set of values
+    variables = ngspice_basic.get_variables()
+
+    for idx, variable in enumerate(variables):
+        key, value = variable['name'], variable['value']
+
+        assert value == set_variables_1[idx]
+        ngspice_basic.set_variable(key, set_variables_2[idx])
+
+    # Check 3: Variables are changed to the second set of values
+    variables = ngspice_basic.get_variables()
+
+    for idx, variable in enumerate(variables):
+        key, value = variable['name'], variable['value']
+    
+        assert value == set_variables_2[idx]
+
+def test_library_change(ngspice_basic):
+    section_1 = 'mos_tt'
+    section_2 = 'mos_ff'
+
+    ngspice_basic.add_library('cornerMOSlv.lib', section=section_1)
+
+    libraries = ngspice_basic._libraries[0]
+    assert libraries.get_name() == 'cornerMOSlv.lib'
+    assert libraries.get_value() == section_1
+
+    ngspice_basic.add_library('cornerMOSlv.lib', section=section_2)
+    assert libraries.get_name() == 'cornerMOSlv.lib'
+    assert libraries.get_value() == section_2
 
 def test_read_dut_netlist(ngspice_basic):
     ngspice_basic._read_dut_nelist()
@@ -273,6 +353,25 @@ def test_run_sweep(ngspice, get_file_path):
     assert measurements != []
     assert len(measurements) == 2
 
+def test_run_lib_sweep(ngspice_no_variables_lib, get_file_path):
+    path_output = get_file_path / "outputs" / "output_subckt_lib_no_variables_process"
+
+    ngspice_no_variables_lib.set_output_path(path_output)
+    ngspice_no_variables_lib.add_library('cornerMOSlv.lib', section=['mos_tt', 'mos_ss'])
+
+    output = ngspice_no_variables_lib.run()
+
+    assert type(output) is dict
+
+    assert output != {}
+    assert output['returncode'] == [0, 0]
+    assert output['stdout'] != ['', '']
+    assert output['stderr'] == ['', '']
+
+    measurements = ngspice_no_variables_lib.get_measurements()
+    assert measurements != []
+    assert len(measurements) == 2
+
 def test_run_no_variables_lib(ngspice_no_variables_lib, get_file_path):
     path_output = get_file_path / "outputs" / "output_subckt_lib_no_variables_mc"
 
@@ -284,3 +383,58 @@ def test_run_no_variables_lib(ngspice_no_variables_lib, get_file_path):
     assert output['returncode'] == 0
     assert output['stdout'] != ''
     assert output['stderr'] == ''
+
+def test_run_temperature(ngspice, get_file_path):
+    path_output = get_file_path / "outputs" / "output_subckt_lib_no_variables_temperature"
+
+    ngspice.set_output_path(path_output)
+    ngspice.set_temperature('80')
+
+    output = ngspice.run()
+
+    assert type(output) is dict
+
+    assert output != {}
+    assert output['returncode'] == 0
+    assert output['stdout'] != ''
+    assert output['stderr'] == ''
+
+def test_run_temperature_sweep(ngspice_no_variables_lib, get_file_path):
+    path_output = get_file_path / "outputs" / "output_subckt_lib_no_variables_process"
+
+    ngspice_no_variables_lib.set_output_path(path_output)
+    ngspice_no_variables_lib.set_temperature(['27', '80'])
+
+    output = ngspice_no_variables_lib.run()
+
+    assert type(output) is dict
+
+    assert output != {}
+    assert output['returncode'] == [0, 0]
+    assert output['stdout'] != ['', '']
+    assert output['stderr'] == ['', '']
+
+    measurements = ngspice_no_variables_lib.get_measurements()
+    assert measurements != []
+    assert len(measurements) == 2
+
+def test_run_sweep_pvt(ngspice_variables_lib, get_file_path):
+    path_output = get_file_path / "outputs" / "output_subckt_lib_variables_pvt"
+
+    ngspice_variables_lib.set_output_path(path_output)
+    ngspice_variables_lib.add_library('cornerMOSlv.lib', section=['mos_tt', 'mos_ss'])
+    ngspice_variables_lib.set_temperature(['27', '80'])
+    ngspice_variables_lib.set_variable('v_vdd', ['1.35', '1.65'])
+
+    output = ngspice_variables_lib.run()
+
+    assert type(output) is dict
+
+    assert output != {}
+    assert output['returncode'] == [0, 0, 0, 0, 0, 0, 0, 0]
+    assert output['stdout'] != ['', '', '', '', '', '', '', '']
+    assert output['stderr'] == ['', '', '', '', '', '', '', ''] 
+
+    measurements = ngspice_variables_lib.get_measurements()
+    assert measurements != []
+    assert len(measurements) == 8

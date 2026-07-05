@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Literal, Union
+from typing import Literal
 import copy
 
 class Variable:
@@ -7,9 +7,10 @@ class Variable:
                 VARIABLE = 'variable'
                 LIBRARY = 'library'
                 EQUATION = 'equation'
+                TEMPERATURE = 'temperature'
 
         # Define allowed types for type hints
-        TypeLiteral = Literal['variable', 'equation', 'library']
+        TypeLiteral = Literal['variable', 'equation', 'library', 'temperature']
 
         def __init__(self, name: str, type: TypeLiteral = 'variable') -> None:
                 self._name = name
@@ -33,6 +34,9 @@ class Variable:
                 if self._type == self._Type.LIBRARY.value:
                         return f'.lib {self._path} {self._value}'
 
+                if self._type == self._Type.TEMPERATURE.value:
+                        return f'.temp {self._value}'
+
                 # Variable
                 return f'.param {self._name}={self._value}'
         
@@ -52,3 +56,9 @@ class Variable:
                         return_list.append(object_copy)
 
                 return return_list
+        
+        def get_dict(self) -> dict:
+                return {
+                        "name": self._name,
+                        "value": self._value,
+                }

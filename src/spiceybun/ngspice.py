@@ -56,6 +56,12 @@ class Ngspice:
                                 self._variables.append(Variable(name))
 
         def _read_dut_nelist(self) -> None:
+                if not self._path_netlist:
+                        raise ValueError("Spiceybun: Netlist path cannot be empty.")
+
+                if not os.path.isfile(self._path_netlist):
+                        raise FileNotFoundError(f"Spiceybun: The file '{self._path_netlist}' does not exist.")
+
                 with open(self._path_netlist, 'r') as f:
                         self._netlist_dut = f.readlines()
 
@@ -327,7 +333,7 @@ class Ngspice:
 # Public methods
 
         def get_variables(self) -> list:
-                return self._variables
+                return [variable.get_dict() for variable in self._variables]
 
         def get_sim_output(self) -> dict:
                 return self._results
@@ -350,20 +356,38 @@ class Ngspice:
 
                 return results
 
-        def set_variable(self, name, value) -> Variable | None:
+        def set_variable(self, name, value) -> dict | None:
                 for variable in self._variables:
                         if variable.get_name() == name:
                                 variable.set_value(value)
-                                return variable
+                                return variable.get_dict()
 
                 return None
 
-        def add_library(self, path, section=''):
-                library = Variable(name=path, type='library')
+        def set_temperature(self, temperature) -> dict:
+                for variable in self._variables:
+                        if variable.get_name() == 'temperature':
+                                variable.set_value(temperature)
+                                return variable.get_dict()
+
+                temp = Variable(name='temperature', type='temperature')
+                temp.set_value(temperature)
+
+                self._variables.append(temp)
+
+                return temp.get_dict()
+
+        def add_library(self, library_path, section='') -> dict:
+                for library in self._libraries:
+                        if library.get_name() == library_path:
+                                library.set_value(section)
+                                return library.get_dict()
+
+                library = Variable(name=library_path, type='library')
                 library.set_value(section)
                 self._libraries.append(library)
 
-                return library
+                return library.get_dict()
 
         def add_transient(self, t_stop, **kwargs) -> str:
                 # Overwrite previous transient statement if it exists
@@ -384,8 +408,8 @@ class Ngspice:
 
                 return transient_statement
 
-        def add_spiceinit(self, path) -> str:
-                self._spiceinit = path
+        def add_spiceinit(self, spiceinit_path) -> str:
+                self._spiceinit = spiceinit_path
 
                 return self._spiceinit
 
@@ -403,8 +427,8 @@ class Ngspice:
 
                 return self._plot_all
 
-        def set_output_path(self, path) -> None:
-                self._output_path = path
+        def set_output_path(self, output_path) -> None:
+                self._output_path = output_path
 
         def run(self, **kwargs) -> dict:
                 total_variations = self._libraries + self._variables
