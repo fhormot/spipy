@@ -24,7 +24,7 @@ class Variable:
         def get_name(self) -> str:
                 return self._name
         
-        def get_value(self) -> str:
+        def get_value(self) -> int | float | str | list:
                 return self._value
         
         def get_value_definition(self) -> str:                     
@@ -40,16 +40,18 @@ class Variable:
                 # Variable
                 return f'.param {self._name}={self._value}'
         
-        def set_value(self, value: str) -> None:
+        def set_value(self, value: int | float | str | list) -> None:
                 self._value = value
 
         def get_split(self) -> list:
-                if not isinstance(self._value, list):
+                value = self.get_value()
+
+                if not isinstance(value, list):
                         return [self]
 
                 return_list = []
 
-                for idx, variable in enumerate(self.get_value()):
+                for idx, variable in enumerate(value):
                         object_copy = copy.deepcopy(self)
 
                         object_copy.set_value(variable)
