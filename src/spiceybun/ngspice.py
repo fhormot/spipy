@@ -601,9 +601,10 @@ class Ngspice:
                 # Step 2: Find/assume fastest signal in netlist and adjust t_step accordingly
                 # --> Not accounting for fast digital signals 
                 # TODO: Define transient statement using variables
-                t_start = kwargs.get('t_start', '0')
-                t_step = kwargs.get('t_step', (t_stop-t_start)/50)
-                t_max = kwargs.get('t_max', t_step*10)
+                t_stop = float(t_stop)
+                t_start = float(kwargs.get('t_start', 0))
+                t_step = float(kwargs.get('t_step', (t_stop-t_start)/50))
+                t_max = float(kwargs.get('t_max', t_step*10))
 
                 transient_statement = f'tran {t_step} {t_stop} {t_start} {t_max}'
 

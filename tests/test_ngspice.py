@@ -281,7 +281,11 @@ def test_write_netlist(ngspice_basic):
     statement = ngspice_basic.add_transient(t_stop, t_step=t_step, t_start=t_start, t_max=t_max)
     assert len(ngspice_basic._analysis) == 1
 
-    assert statement == f'tran {t_step} {t_stop} {t_start} {t_max}'
+    # assert statement == f'tran {t_step} {t_stop} {t_start} {t_max}'
+    statement_pieces = statement.split()[1:]
+    statement_pieces = [float(piece) for piece in statement_pieces]
+
+    assert statement_pieces == [float(t_step), float(t_stop), float(t_start), float(t_max)]
 
     ngspice_basic._write_netlist()
 
