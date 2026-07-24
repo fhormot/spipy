@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [Unreleased]
+## [0.3.0]
 
 ### Added
 
@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning].
 ### Removed
 
 ### Fixed
+- Code documentation
 
 #### Ngspice class
 - Now checks if the DUT netlist path is valid or provided during initialization.
