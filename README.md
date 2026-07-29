@@ -44,3 +44,4 @@ TBD
     - [ ] Simulator options
     - [ ] Report generation
     - [ ] Simulator error handling
+    - [ ] Parameter alteration

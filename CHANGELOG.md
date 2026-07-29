@@ -5,18 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [0.3.0]
+## [0.3.1] - 2026-07-24
+
+### Fixed
+
+#### Ngspice class
+
+- Bug where the Ngspice class didnt convert transient statement variables to float
+
+## [0.3.0] - 2026-07-24
 
 ### Added
 
 #### Ngspice class
 - Set simulation temperature (or temperature sweep) using set_temperature() method
-
-### Changed
-
-### Deprecated
-
-### Removed
 
 ### Fixed
 - Code documentation
@@ -25,8 +27,6 @@ and this project adheres to [Semantic Versioning].
 - Now checks if the DUT netlist path is valid or provided during initialization.
 - Library can now be overwritten and swept (PVT).
 - Variable/library/temperature setting now returns a dictionary. get_variables() method returns a list of dictionaries.
-
-### Security
 
 ## [0.2.1] - 2026-07-04
 
