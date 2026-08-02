@@ -1,9 +1,10 @@
-import pytest
-
 import os
 from pathlib import Path
 
+import pytest
+
 from spiceybun.xschem import Xschem
+
 
 def load_netlist(path: Path) -> list:
     """

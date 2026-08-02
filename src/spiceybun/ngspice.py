@@ -1,12 +1,12 @@
-import subprocess
 import os
 import re
-from pathlib import Path
-
+import subprocess
 from itertools import product
+from pathlib import Path
 
 from spiceybun.measure_ngspice import Measure_ngspice
 from spiceybun.variable import Variable
+
 
 class Ngspice:
         def __init__(self, path_netlist, **kwargs):
@@ -429,7 +429,8 @@ class Ngspice:
                         # env=self.env, 
                         shell=True, 
                         capture_output=True, 
-                        text=True
+                        text=True,
+                        check=True
                 )
 
                 run_path = os.path.join(output_path, 'run.log')
@@ -514,7 +515,7 @@ class Ngspice:
 
                 return results
 
-        def set_variable(self, name: str, value: int | float | str | list) -> dict | None:
+        def set_variable(self, name: str, value: float | str | list) -> dict | None:
                 """
                 Set the value of a variable.
 
@@ -533,7 +534,7 @@ class Ngspice:
 
                 return None
 
-        def set_temperature(self, temperature: int | float | str | list) -> dict:
+        def set_temperature(self, temperature: float | str | list) -> dict:
                 """
                 Set the temperature for the simulation. If a temperature variable already exists, it will be updated; otherwise, a new temperature variable will be created.
 
@@ -579,7 +580,7 @@ class Ngspice:
 
                 return library.get_dict()
 
-        def add_transient(self, t_stop: float | int | str, **kwargs) -> str:
+        def add_transient(self, t_stop: float | str, **kwargs) -> str:
                 """
                 Add a transient analysis statement to the netlist. If a transient statement already exists, it will be overwritten with the new parameters.
                 
@@ -640,7 +641,7 @@ class Ngspice:
                         ValueError: If the signal is not a string or a list of strings.
                 """
                 if not isinstance(signal, (str, list)):
-                        raise ValueError("Spiceybun: Signal must be a string or a list of strings.")
+                        raise TypeError("Spiceybun: Signal must be a string or a list of strings.")
                 
                 #TODO: Check if valid net/port
                 #TODO: Remove duplicates from self._plots

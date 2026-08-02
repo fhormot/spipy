@@ -1,9 +1,10 @@
-import pytest
-
 import os
 from pathlib import Path
 
+import pytest
+
 from spiceybun.ngspice import Ngspice
+
 
 @pytest.fixture
 def get_file_path():

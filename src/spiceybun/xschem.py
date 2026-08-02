@@ -1,7 +1,7 @@
-import subprocess
 import os
-
+import subprocess
 from pathlib import Path
+
 
 class Xschem:
     def __init__(self, path: str | Path):
