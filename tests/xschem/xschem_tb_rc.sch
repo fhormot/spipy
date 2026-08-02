@@ -13,7 +13,6 @@ N 380 -150 380 -130 {lab=v_cap}
 N 90 -150 90 -140 {lab=v_in}
 N 260 -150 380 -150 {lab=v_cap}
 N 90 -150 200 -150 {lab=v_in}
-C {devices/vsource.sym} 90 -110 0 0 {name=Vin value="pulse (0 1.5 100n 0.5n 0.5n 200n 2)"}
 C {gnd.sym} 90 -40 0 0 {name=l1 lab=0}
 C {capa-2.sym} 380 -100 0 0 {name=C1
 m=1
@@ -26,3 +25,4 @@ value=1e6
 footprint=1206
 device=resistor
 m=1}
+C {vsource.sym} 90 -110 0 0 {name=V1 value="pulse (0 1.5 100n 0.5n 0.5n 200n 2)"}

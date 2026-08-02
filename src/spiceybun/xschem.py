@@ -17,7 +17,7 @@ class Xschem:
 
         input_path = self.path
         output_path = kwargs.get("path", Path(input_path).parent)
-        name = kwargs.get("name", Path(input_path).with_suffix(".spice"))
+        name = kwargs.get("name", Path(input_path).with_suffix(".spice").name)
 
         command_format = "xschem --netlist --spice -x --quit -o {output_path} -N {name} {input_path}"
 
@@ -36,7 +36,7 @@ class Xschem:
                                 check=False)
 
         return {
-            "netlist": output.stdout,
-            "errors": output.stderr,
-            "path": output_path
+            "stdout": output.stdout,
+            "stderr": output.stderr,
+            "path": f"{output_path}/{name}",
         }
