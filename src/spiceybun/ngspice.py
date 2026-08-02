@@ -613,6 +613,50 @@ class Ngspice:
 
                 return transient_statement
 
+        def add_ac(self, f_start: float | str, f_stop: float | str, n: int, **kwargs) -> str:
+                """
+                Add an AC analysis statement to the netlist. If an AC statement already exists, it will be overwritten with the new parameters.
+
+                Args:
+                        f_start (float): The start frequency for the AC analysis.
+                        f_stop (float): The stop frequency for the AC analysis.
+                        n (int): The number of points per decade for the AC analysis.
+                        type (str, optional): The type of AC analysis. Default is 'dec' for a decade sweep. Other options include 'oct' for an octave sweep and 'lin' for a linear sweep.
+
+                Returns:
+                        str: The AC analysis statement added to the netlist.
+                """
+                # Overwrite previous AC statement if it exists
+                self._analysis = [x for x in self._analysis if not x.startswith("ac")]
+
+                f_start = float(f_start)
+                f_stop = float(f_stop)
+                n_x = int(n)
+
+                type = kwargs.get('type', 'dec')
+
+                ac_statement = f'ac {type} {n_x} {f_start} {f_stop}'
+
+                self._analysis.append(ac_statement)
+
+                return ac_statement
+
+        def add_op(self) -> str:
+                """
+                Add an operating point analysis statement to the netlist. If an operating point statement already exists, it will be overwritten.
+
+                Returns:
+                        str: The operating point analysis statement added to the netlist.
+                """
+                # Overwrite previous operating point statement if it exists
+                self._analysis = [x for x in self._analysis if not x.startswith("op")]
+
+                op_statement = 'op'
+
+                self._analysis.append(op_statement)
+
+                return op_statement
+
         def add_spiceinit(self, spiceinit_path) -> str:
                 """
                 Define the path to a .spiceinit file to be used during the simulation. If a .spiceinit file already exists, it will be overwritten with the new path.
