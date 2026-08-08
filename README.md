@@ -27,6 +27,16 @@ TBD
 - [ ] Enabling basic functionality:
     - [ ] All analysis statements
         - [x] Transient
+        - [x] OP, DC
+        - [x] AC
+        - [ ] DISTO
+        - [ ] NOISE
+        - [ ] PZ
+        - [ ] SENS
+        - [ ] SP
+        - [ ] TF
+        - [ ] Transient noise
+        - [ ] PSS
     - [ ] Libraries
         - [x] Library inclusion
         - [x] Library sweep
@@ -40,7 +50,7 @@ TBD
 - [x] Sweeps
 - [x] Monte Carlo
 - [ ] Advanced features
-    - [ ] Netlist from XSchem
+    - [x] Netlist from XSchem
     - [ ] Simulator options
     - [ ] Report generation
     - [ ] Simulator error handling

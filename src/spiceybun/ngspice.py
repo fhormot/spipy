@@ -657,6 +657,32 @@ class Ngspice:
 
                 return op_statement
 
+        def add_dc(self, source: str, start: float | str, stop: float | str, step: float | str) -> str:
+                """
+                Add a DC sweep analysis statement to the netlist. If a DC statement already exists, it will be overwritten with the new parameters.
+
+                Args:
+                        source (str): The name of the source to sweep. Source can be  independent voltage or current source, a resistor, or the circuit temperature.
+                        start (float): The start value for the DC sweep.
+                        stop (float): The stop value for the DC sweep.
+                        step (float): The step size for the DC sweep.
+
+                Returns:
+                        str: The DC sweep analysis statement added to the netlist.
+                """
+                # Overwrite previous DC statement if it exists
+                self._analysis = [x for x in self._analysis if not x.startswith("dc")]
+
+                start = float(start)
+                stop = float(stop)
+                step = float(step)
+
+                dc_statement = f'dc {source} {start} {stop} {step}'
+
+                self._analysis.append(dc_statement)
+
+                return dc_statement
+
         def add_spiceinit(self, spiceinit_path) -> str:
                 """
                 Define the path to a .spiceinit file to be used during the simulation. If a .spiceinit file already exists, it will be overwritten with the new path.

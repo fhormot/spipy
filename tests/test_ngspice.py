@@ -443,3 +443,24 @@ def test_run_sweep_pvt(ngspice_variables_lib, get_file_path):
     measurements = ngspice_variables_lib.get_measurements()
     assert measurements != []
     assert len(measurements) == 8
+
+def test_ac_nom():
+    test_dir = Path(__file__).parent
+
+    path_netlist = test_dir / "netlists" / "input_flat_ac.spice"
+    path_output = test_dir / "outputs" / "output_flat_ac"
+
+    ngspice = Ngspice(path_netlist)
+    ngspice.set_output_path(path_output)
+
+    ngspice.add_ac(1, 1e12, 101)
+
+    ngspice.save_signal_all(False)
+
+    ngspice.save_signal('V(v_out)')
+    ngspice.save_signal('V(v_in)')
+
+    ngspice.measure.explicit('meas ac gain_dc FIND vdb(v_out) AT=1')
+    ngspice.measure.explicit('meas ac freq_unity WHEN vdb(v_out)=0 CROSS=1')
+
+    ngspice.run()

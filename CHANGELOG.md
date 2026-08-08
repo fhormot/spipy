@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [UNRELEASED] - 
+
+### Added
+
+#### Ngspice class
+
+- AC, DC, OP analysis
+
+#### Xschem class
+
+- Added
+- Netlist directly from an Xschem schematic
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
 ## [0.3.1] - 2026-07-24
 
 ### Fixed

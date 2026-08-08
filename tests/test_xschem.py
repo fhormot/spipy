@@ -27,13 +27,13 @@ def load_netlist(path: Path) -> list:
 @pytest.fixture
 def xschem_instance():
     path = Path(__file__).parent
-    path_netlist = path / "xschem" / "xschem_tb_rc.sch"
+    path_netlist = path / "xschem" / "xschem_tb_gain_ac.sch"
 
     return Xschem(path_netlist)
 
 def test_netlist_generation(xschem_instance):
     path = Path(__file__).parent
-    path_output = path / "outputs" / "xschem_tb_rc"
+    path_output = path / "outputs" / "xschem_tb_gain_ac"
 
     result = xschem_instance.netlist(path=path_output)
 
@@ -42,8 +42,6 @@ def test_netlist_generation(xschem_instance):
 
     # Remove comments and empty lines
     netlist_result = load_netlist(result["path"])
-    netlist_expected = load_netlist(Path(__file__).parent / "netlists" / "input_flat_no_variables.spice")
+    netlist_expected = load_netlist(Path(__file__).parent / "netlists" / "input_flat_ac.spice")
 
     assert netlist_result == netlist_expected
-
-
